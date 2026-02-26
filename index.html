@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GPA Calculator | Ahmed - Mechanical Eng</title>
 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y6GSQ6SPP2"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-Y6GSQ6SPP2'); // حط رقمك هنا برضه
+      gtag('config', 'G-Y6GSQ6SPP2');
     </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -38,6 +38,8 @@
         #results { margin-top: 25px; display: none; text-align: center; padding: 25px; background: var(--primary); color: white; border-radius: 20px; }
         .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
         .gpa-num { font-size: 2rem; font-weight: 800; color: var(--accent); display: block; }
+        .gpa-rating { font-size: 1.2rem; font-weight: bold; color: white; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; }
+        .precision-tag { display: block; text-align: center; font-size: 0.8rem; color: #64748b; margin-top: -15px; margin-bottom: 15px; font-weight: bold; }
         .developer-footer { margin-top: 40px; padding: 25px 15px; border-top: 2px solid #f1f5f9; text-align: center; }
         .dev-name { font-family: 'Georgia', serif; font-size: 1.8rem; font-weight: bold; color: var(--primary); margin: 0; }
         .dev-sub { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; }
@@ -49,7 +51,7 @@
     <div class="header-logo">
         <div class="logo-icon">⚙️</div>
         <h1>حاسبة GPA هندسة الإسكندرية</h1>
-        <p class="subtitle">كلية الهندسة  </p>
+        <p class="subtitle"> كلية الهندسة </p>
     </div>
 
     <div class="grad-info">
@@ -78,6 +80,7 @@
 
     <div class="section no-pdf">
         <h3>📝 مواد الفصل الحالي</h3>
+        <span class="precision-tag">أدق | حساب المعدل الفصلي والتراكمي</span>
         <div id="currentList"></div>
         <button class="btn-calc" style="background:#f1f5f9; color:var(--primary); font-size:0.8rem; padding:8px;" onclick="addRow('currentList')">+ إضافة مادة للترم</button>
     </div>
@@ -96,6 +99,7 @@
                 <span class="gpa-num" id="res-cgpa">0.00</span>
             </div>
         </div>
+        <div id="rating-text" class="gpa-rating"></div>
     </div>
 
     <div class="developer-footer">
@@ -126,6 +130,17 @@
         document.getElementById(containerId).appendChild(div);
     }
 
+    // التقديرات بناءً على الصورة اللي بعتها بالظبط:
+    function getRatingFromImage(gpa) {
+        if (gpa >= 3.7) return "امتياز مرتفع";
+        if (gpa >= 3.3) return "امتياز";
+        if (gpa >= 3.0) return "جيد جداً مرتفع";
+        if (gpa >= 2.7) return "جيد جداً";
+        if (gpa >= 2.3) return "جيد مرتفع";
+        if (gpa >= 2.0) return "جيد";
+        return "تحت الإنذار";
+    }
+
     function calculate() {
         let prevPoints = 0, prevHours = 0, termPoints = 0, termHours = 0, currentNoReHours = 0;
         if (activeTab === 'manual') {
@@ -149,9 +164,14 @@
         });
         let termGPA = termHours > 0 ? (termPoints / termHours) : 0;
         let finalCGPA = (prevHours + currentNoReHours) > 0 ? ((prevPoints + termPoints) / (prevHours + currentNoReHours)) : 0;
+        
         document.getElementById('results').style.display = 'block';
         document.getElementById('res-term-gpa').innerText = termGPA.toFixed(2);
-        document.getElementById('res-cgpa').innerText = finalCGPA.toFixed(2);
+        document.getElementById('res-cgpa').innerText = finalCGPA.toFixed(3);
+        
+        // تطبيق التقدير من الصورة
+        document.getElementById('rating-text').innerText = "التقدير التراكمي: " + getRatingFromImage(finalCGPA);
+        
         document.getElementById('pdfBtn').style.display = 'block';
         let totalH = prevHours + currentNoReHours;
         document.getElementById('p-bar').style.width = Math.min((totalH / GRAD_HOURS) * 100, 100) + "%";
@@ -162,7 +182,7 @@
     function downloadPDF() {
         const element = document.getElementById('main-content');
         document.querySelectorAll('.no-pdf').forEach(el => el.style.display = 'none');
-        html2pdf().set({ margin: 10, filename: 'GPA_Ahmed.pdf' }).from(element).save().then(() => {
+        html2pdf().set({ margin: 10, filename: 'GPA_Ahmed_Mechanical.pdf' }).from(element).save().then(() => {
             document.querySelectorAll('.no-pdf').forEach(el => el.style.display = 'block');
         });
     }
@@ -170,7 +190,7 @@
     window.onload = function() { for(let i=0; i<4; i++) addRow('currentList'); };
 </script>
 </body>
-
 </html>
+
 
 
