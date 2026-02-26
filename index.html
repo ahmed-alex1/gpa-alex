@@ -51,7 +51,7 @@
     <div class="header-logo">
         <div class="logo-icon">⚙️</div>
         <h1>حاسبة GPA هندسة الإسكندرية</h1>
-        <p class="subtitle">كلية الهندسة </p>
+        <p class="subtitle">كلية الهندسة</p>
     </div>
 
     <div class="grad-info">
@@ -68,7 +68,7 @@
         </div>
         <div id="manual-input">
             <div style="display: flex; gap: 10px;">
-                <div style="flex:1"><label>CGPA:</label><input type="number" id="oldCGPA" step="0.001" placeholder="0.00"></div>
+                <div style="flex:1"><label>CGPA:</label><input type="number" id="oldCGPA" step="0.01" placeholder="0.00"></div>
                 <div style="flex:1"><label>الساعات:</label><input type="number" id="oldHours" placeholder="0"></div>
             </div>
         </div>
@@ -130,7 +130,6 @@
         document.getElementById(containerId).appendChild(div);
     }
 
-    // التقديرات بناءً على الصورة اللي بعتها بالظبط:
     function getRatingFromImage(gpa) {
         if (gpa >= 3.7) return "امتياز مرتفع";
         if (gpa >= 3.3) return "امتياز";
@@ -162,14 +161,15 @@
             termHours += h;
             if (!isRe) currentNoReHours += h;
         });
+        
         let termGPA = termHours > 0 ? (termPoints / termHours) : 0;
         let finalCGPA = (prevHours + currentNoReHours) > 0 ? ((prevPoints + termPoints) / (prevHours + currentNoReHours)) : 0;
         
         document.getElementById('results').style.display = 'block';
         document.getElementById('res-term-gpa').innerText = termGPA.toFixed(2);
-        document.getElementById('res-cgpa').innerText = finalCGPA.toFixed(3);
+        // تم التغيير هنا إلى رقمين عشريين (.toFixed(2))
+        document.getElementById('res-cgpa').innerText = finalCGPA.toFixed(2);
         
-        // تطبيق التقدير من الصورة
         document.getElementById('rating-text').innerText = "التقدير التراكمي: " + getRatingFromImage(finalCGPA);
         
         document.getElementById('pdfBtn').style.display = 'block';
