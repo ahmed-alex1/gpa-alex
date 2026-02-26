@@ -40,7 +40,8 @@
         .gpa-rating { font-size: 1.2rem; font-weight: bold; color: white; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; }
         .developer-footer { margin-top: 40px; padding: 25px 15px; border-top: 2px solid #f1f5f9; text-align: center; }
         .dev-name { font-family: 'Georgia', serif; font-size: 1.8rem; font-weight: bold; color: var(--primary); margin: 0; }
-        .dev-sub { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; }
+        .dev-sub { font-size: 0.9rem; color: #475569; font-weight: 700; margin-top: 5px; }
+        .dev-uni { font-size: 0.8rem; color: #64748b; margin-top: 3px; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -49,7 +50,7 @@
     <div class="header-logo">
         <div class="logo-icon">⚙️</div>
         <h1>حاسبة GPA هندسة الإسكندرية</h1>
-        <p class="subtitle">كلية الهندسة </p>
+        <p class="subtitle">كلية الهندسة</p>
     </div>
 
     <div class="grad-info">
@@ -87,11 +88,11 @@
     <div id="results">
         <div class="res-grid">
             <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 15px;">
-                <span style="font-size: 0.8rem; opacity: 0.9;">معدل الترم (GPA)</span>
+                <small style="opacity: 0.9;">معدل الترم (GPA)</small>
                 <span class="gpa-num" id="res-term-gpa">0.00</span>
             </div>
             <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 15px;">
-                <span style="font-size: 0.8rem; opacity: 0.9;">التراكمي (CGPA)</span>
+                <small style="opacity: 0.9;">التراكمي (CGPA)</small>
                 <span class="gpa-num" id="res-cgpa">0.00</span>
             </div>
         </div>
@@ -101,6 +102,7 @@
     <div class="developer-footer">
         <div class="dev-name">Ahmed</div>
         <div class="dev-sub">Mechanical Engineering</div>
+        <div class="dev-uni">Alexandria University - Faculty of Engineering</div>
     </div>
 </div>
 
@@ -157,14 +159,12 @@
             if (!isRe) currentNoReHours += h;
         });
         
-        // التقريب لرقمين (.toFixed(2)) لكل من المعدلين
         let termGPA = termHours > 0 ? (termPoints / termHours) : 0;
         let finalCGPA = (prevHours + currentNoReHours) > 0 ? ((prevPoints + termPoints) / (prevHours + currentNoReHours)) : 0;
         
         document.getElementById('results').style.display = 'block';
         document.getElementById('res-term-gpa').innerText = termGPA.toFixed(2);
         document.getElementById('res-cgpa').innerText = finalCGPA.toFixed(2);
-        
         document.getElementById('rating-text').innerText = "التقدير التراكمي: " + getRatingFromImage(finalCGPA);
         
         let totalH = prevHours + currentNoReHours;
