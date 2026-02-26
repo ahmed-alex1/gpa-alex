@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA Calculator | Ahmed - Mechanical Eng</title>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Y6GSQ6SPP2'); // حط رقمك هنا برضه
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root { --primary: #003366; --accent: #d4af37; --bg: #f8fafc; --success: #10b981; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #334155; }
+        .container { max-width: 680px; margin: auto; background: white; padding: 25px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 10px solid var(--primary); }
+        .header-logo { text-align: center; margin-bottom: 20px; }
+        .logo-icon { font-size: 50px; color: var(--primary); animation: rotateGear 5s linear infinite; display: inline-block; }
+        @keyframes rotateGear { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        h1 { color: var(--primary); text-align: center; font-size: 1.6rem; margin: 0; }
+        .subtitle { text-align: center; color: #64748b; font-size: 0.85rem; margin-bottom: 25px; }
+        .grad-info { background: #eff6ff; padding: 15px; border-radius: 16px; margin-bottom: 20px; text-align: center; border: 1px solid #bfdbfe; }
+        .progress-container { background: #e2e8f0; height: 10px; border-radius: 10px; margin: 12px 0; overflow: hidden; }
+        .progress-bar { background: var(--success); height: 100%; width: 0%; transition: 1s ease-in-out; }
+        .section { background: #ffffff; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        h3 { margin-top: 0; color: var(--primary); font-size: 1rem; border-right: 4px solid var(--accent); padding-right: 10px; }
+        .tab-buttons { display: flex; gap: 8px; margin-bottom: 15px; }
+        .tab-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #f8fafc; cursor: pointer; font-weight: bold; text-align: center;}
+        .tab-btn.active { background: var(--primary); color: white; }
+        .course-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; background: #f9fafb; padding: 8px; border-radius: 10px; }
+        input, select { padding: 10px; border: 1.5px solid #f1f5f9; border-radius: 8px; width: 100%; }
+        .btn-calc { background: var(--primary); color: white; width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
+        .btn-pdf { background: #f1f5f9; color: var(--primary); width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; display: none; }
+        #results { margin-top: 25px; display: none; text-align: center; padding: 25px; background: var(--primary); color: white; border-radius: 20px; }
+        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .gpa-num { font-size: 2rem; font-weight: 800; color: var(--accent); display: block; }
+        .developer-footer { margin-top: 40px; padding: 25px 15px; border-top: 2px solid #f1f5f9; text-align: center; }
+        .dev-name { font-family: 'Georgia', serif; font-size: 1.8rem; font-weight: bold; color: var(--primary); margin: 0; }
+        .dev-sub { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="main-content">
+    <div class="header-logo">
+        <div class="logo-icon">⚙️</div>
+        <h1>حاسبة GPA هندسة الإسكندرية</h1>
+        <p class="subtitle">كلية الهندسة - قسم الميكانيكا</p>
+    </div>
+
+    <div class="grad-info">
+        <span id="h-summary" style="font-weight: bold;">تتبع الساعات المعتمدة (144 ساعة)</span>
+        <div class="progress-container"><div id="p-bar" class="progress-bar"></div></div>
+        <small id="h-left" style="color: #1e40af;"></small>
+    </div>
+
+    <div class="section no-pdf">
+        <h3>📊 السجلات السابقة</h3>
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('manual')">الـ CGPA الحالي</button>
+            <button class="tab-btn" onclick="switchTab('detailed')">رصد المواد السابقة</button>
+        </div>
+        <div id="manual-input">
+            <div style="display: flex; gap: 10px;">
+                <div style="flex:1"><label>CGPA:</label><input type="number" id="oldCGPA" step="0.001" placeholder="0.00"></div>
+                <div style="flex:1"><label>الساعات:</label><input type="number" id="oldHours" placeholder="0"></div>
+            </div>
+        </div>
+        <div id="detailed-input" style="display: none;">
+            <div id="prevList"></div>
+            <button class="btn-calc" style="background:#f1f5f9; color:var(--primary); font-size:0.8rem; padding:8px;" onclick="addRow('prevList')">+ إضافة مادة سابقة</button>
+        </div>
+    </div>
+
+    <div class="section no-pdf">
+        <h3>📝 مواد الفصل الحالي</h3>
+        <div id="currentList"></div>
+        <button class="btn-calc" style="background:#f1f5f9; color:var(--primary); font-size:0.8rem; padding:8px;" onclick="addRow('currentList')">+ إضافة مادة للترم</button>
+    </div>
+
+    <button class="btn-calc no-pdf" onclick="calculate()">احسب المعدل النهائي</button>
+    <button class="btn-pdf no-pdf" id="pdfBtn" onclick="downloadPDF()">تحميل النتيجة PDF 📄</button>
+
+    <div id="results">
+        <div class="res-grid">
+            <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 15px;">
+                <span style="font-size: 0.8rem; opacity: 0.9;">معدل الترم (GPA)</span>
+                <span class="gpa-num" id="res-term-gpa">0.00</span>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 15px;">
+                <span style="font-size: 0.8rem; opacity: 0.9;">التراكمي (CGPA)</span>
+                <span class="gpa-num" id="res-cgpa">0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="developer-footer">
+        <div class="dev-name">Ahmed</div>
+        <div class="dev-sub">Mechanical Engineering</div>
+        <div style="margin-top: 5px; font-size: 0.8rem; color: #475569;">Alexandria University - Faculty of Engineering</div>
+    </div>
+</div>
+
+<script>
+    const GRAD_HOURS = 144;
+    const GRADES = { "A": 4.0, "A-": 3.7, "B+": 3.3, "B": 3.0, "B-": 2.7, "C+": 2.3, "C": 2.0, "C-": 1.7, "D+": 1.3, "D": 1.0, "F": 0.0 };
+    let activeTab = 'manual';
+
+    function switchTab(t) {
+        activeTab = t;
+        document.getElementById('manual-input').style.display = t === 'manual' ? 'block' : 'none';
+        document.getElementById('detailed-input').style.display = t === 'detailed' ? 'block' : 'none';
+        const btns = document.querySelectorAll('.tab-btn');
+        btns[0].classList.toggle('active', t === 'manual');
+        btns[1].classList.toggle('active', t === 'detailed');
+    }
+
+    function addRow(containerId) {
+        const div = document.createElement('div');
+        div.className = 'course-row';
+        div.innerHTML = `<input type="number" placeholder="ساعة" class="h" style="width: 70px;"><select class="g" style="flex: 1;">${Object.keys(GRADES).map(g => `<option value="${GRADES[g]}">${g}</option>`).join('')}</select><label style="font-size:0.65rem;"><input type="checkbox" class="is-re"> إعادة؟</label><button class="no-pdf" onclick="this.parentElement.remove()" style="border:none; background:none; color:red; cursor:pointer;">✕</button>`;
+        document.getElementById(containerId).appendChild(div);
+    }
+
+    function calculate() {
+        let prevPoints = 0, prevHours = 0, termPoints = 0, termHours = 0, currentNoReHours = 0;
+        if (activeTab === 'manual') {
+            prevHours = parseFloat(document.getElementById('oldHours').value) || 0;
+            prevPoints = (parseFloat(document.getElementById('oldCGPA').value) || 0) * prevHours;
+        } else {
+            document.querySelectorAll('#prevList .course-row').forEach(row => {
+                let h = parseFloat(row.querySelector('.h').value) || 0;
+                let g = parseFloat(row.querySelector('.g').value);
+                prevPoints += (h * (row.querySelector('.is-re').checked ? Math.min(g, 3.3) : g));
+                if (!row.querySelector('.is-re').checked) prevHours += h;
+            });
+        }
+        document.querySelectorAll('#currentList .course-row').forEach(row => {
+            let h = parseFloat(row.querySelector('.h').value) || 0;
+            let g = parseFloat(row.querySelector('.g').value);
+            let isRe = row.querySelector('.is-re').checked;
+            termPoints += (h * (isRe ? Math.min(g, 3.3) : g));
+            termHours += h;
+            if (!isRe) currentNoReHours += h;
+        });
+        let termGPA = termHours > 0 ? (termPoints / termHours) : 0;
+        let finalCGPA = (prevHours + currentNoReHours) > 0 ? ((prevPoints + termPoints) / (prevHours + currentNoReHours)) : 0;
+        document.getElementById('results').style.display = 'block';
+        document.getElementById('res-term-gpa').innerText = termGPA.toFixed(2);
+        document.getElementById('res-cgpa').innerText = finalCGPA.toFixed(2);
+        document.getElementById('pdfBtn').style.display = 'block';
+        let totalH = prevHours + currentNoReHours;
+        document.getElementById('p-bar').style.width = Math.min((totalH / GRAD_HOURS) * 100, 100) + "%";
+        document.getElementById('h-summary').innerText = `الإنجاز: ${totalH} / ${GRAD_HOURS} ساعة`;
+        document.getElementById('h-left').innerText = `باقي ${GRAD_HOURS - totalH} ساعة على التخرج`;
+    }
+
+    function downloadPDF() {
+        const element = document.getElementById('main-content');
+        document.querySelectorAll('.no-pdf').forEach(el => el.style.display = 'none');
+        html2pdf().set({ margin: 10, filename: 'GPA_Ahmed.pdf' }).from(element).save().then(() => {
+            document.querySelectorAll('.no-pdf').forEach(el => el.style.display = 'block');
+        });
+    }
+
+    window.onload = function() { for(let i=0; i<4; i++) addRow('currentList'); };
+</script>
+</body>
+</html>
