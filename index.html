@@ -41,7 +41,6 @@
         .gpa-num { font-size: 2.2rem; font-weight: 800; color: var(--accent); display: block; }
         .gpa-rating { font-size: 1.3rem; font-weight: bold; color: white; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; }
         
-        /* التعديل الجديد على الفوتر */
         .footer { margin-top: 40px; text-align: center; border-top: 2px solid #f1f5f9; padding-top: 20px; }
         .college-name { font-size: 0.85rem; color: var(--primary); font-weight: 400; margin-bottom: 4px; letter-spacing: 0.5px; }
         .by-ahmed { font-family: 'Georgia', serif; font-size: 1.3rem; font-weight: bold; color: var(--primary); }
@@ -53,7 +52,7 @@
     <div class="header-logo">
         <div class="logo-icon">⚙️</div>
         <h1>حاسبة GPA هندسة الإسكندرية</h1>
-        <p class="subtitle">لائحة الساعات المعتمدة </p>
+        <p class="subtitle">لائحة الساعات المعتمدة - كلية الهندسة</p>
     </div>
 
     <div class="grad-info">
@@ -153,6 +152,7 @@
     function calculate() {
         let prevPoints = 0, prevHours = 0, prevPassedHours = 0;
         
+        // 1. حساب الساعات السابقة (المنجزة والكلية)
         if (activeTab === 'manual') {
             prevPassedHours = parseFloat(document.getElementById('oldHours').value) || 0;
             prevHours = prevPassedHours; 
@@ -167,23 +167,41 @@
             });
         }
 
-        let termPoints = 0, termHours = 0, termPassedHours = 0, reHoursToSubtract = 0;
+        let termPoints = 0, termHours = 0, termPassedHoursOnlyNew = 0, reHoursSuccededNow = 0, totalReHoursInTerm = 0;
+
+        // 2. معالجة مواد الترم الحالي
         document.querySelectorAll('#currentList .course-row').forEach(row => {
             let h = parseFloat(row.querySelector('.h').value) || 0;
             let g = parseFloat(row.querySelector('.g').value);
             let isRe = row.querySelector('.is-re').checked;
+            
+            // سقف الإعادة B+
             let effectiveGrade = (isRe && g > 3.3) ? 3.3 : g;
+            
             termPoints += (h * effectiveGrade);
             termHours += h;
-            if (g > 0) termPassedHours += h;
-            if (isRe) reHoursToSubtract += h; 
+
+            if (isRe) {
+                totalReHoursInTerm += h;
+                // إذا نجح في مادة الإعادة الآن (تضاف للإنجاز لأنها كانت ناقصة)
+                if (g > 0) reHoursSuccededNow += h;
+            } else {
+                // مادة جديدة تماماً ونجح فيها
+                if (g > 0) termPassedHoursOnlyNew += h;
+            }
         });
 
+        // 3. النتائج النهائية
         let termGPA = termHours > 0 ? (termPoints / termHours) : 0;
-        let totalGPAHours = (prevHours + termHours) - reHoursToSubtract;
+        
+        // المقام للـ CGPA = ساعات قديمة + ساعات جديدة - ساعات الإعادة (عشان متتحسبش مرتين في المعدل)
+        let totalGPAHours = (prevHours + termHours) - totalReHoursInTerm;
         let finalCGPA = totalGPAHours > 0 ? ((prevPoints + termPoints) / totalGPAHours) : 0;
-        let finalPassedHours = (prevPassedHours + termPassedHours) - (reHoursToSubtract > 0 && termPassedHours >= reHoursToSubtract ? reHoursToSubtract : 0);
 
+        // الساعات المنجزة = الساعات الناجحة القديمة + الساعات الجديدة الناجحة + ساعات الإعادة اللي نجح فيها دلوقتي
+        let finalPassedHours = prevPassedHours + termPassedHoursOnlyNew + reHoursSuccededNow;
+
+        // تحديث الواجهة
         document.getElementById('results').style.display = 'block';
         document.getElementById('res-term-gpa').innerText = termGPA.toFixed(2);
         document.getElementById('res-cgpa').innerText = finalCGPA.toFixed(2);
@@ -201,7 +219,6 @@
 </script>
 </body>
 </html>
-
 
 
 
