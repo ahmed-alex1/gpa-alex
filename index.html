@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y6GSQ6SPP2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-Y6GSQ6SPP2');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GPA Calculator | Engineering Alexandria</title>
@@ -152,7 +161,6 @@
     function calculate() {
         let prevPoints = 0, prevHours = 0, prevPassedHours = 0;
         
-        // 1. حساب الساعات السابقة (المنجزة والكلية)
         if (activeTab === 'manual') {
             prevPassedHours = parseFloat(document.getElementById('oldHours').value) || 0;
             prevHours = prevPassedHours; 
@@ -169,13 +177,11 @@
 
         let termPoints = 0, termHours = 0, termPassedHoursOnlyNew = 0, reHoursSuccededNow = 0, totalReHoursInTerm = 0;
 
-        // 2. معالجة مواد الترم الحالي
         document.querySelectorAll('#currentList .course-row').forEach(row => {
             let h = parseFloat(row.querySelector('.h').value) || 0;
             let g = parseFloat(row.querySelector('.g').value);
             let isRe = row.querySelector('.is-re').checked;
             
-            // سقف الإعادة B+
             let effectiveGrade = (isRe && g > 3.3) ? 3.3 : g;
             
             termPoints += (h * effectiveGrade);
@@ -183,25 +189,19 @@
 
             if (isRe) {
                 totalReHoursInTerm += h;
-                // إذا نجح في مادة الإعادة الآن (تضاف للإنجاز لأنها كانت ناقصة)
                 if (g > 0) reHoursSuccededNow += h;
             } else {
-                // مادة جديدة تماماً ونجح فيها
                 if (g > 0) termPassedHoursOnlyNew += h;
             }
         });
 
-        // 3. النتائج النهائية
         let termGPA = termHours > 0 ? (termPoints / termHours) : 0;
         
-        // المقام للـ CGPA = ساعات قديمة + ساعات جديدة - ساعات الإعادة (عشان متتحسبش مرتين في المعدل)
         let totalGPAHours = (prevHours + termHours) - totalReHoursInTerm;
         let finalCGPA = totalGPAHours > 0 ? ((prevPoints + termPoints) / totalGPAHours) : 0;
 
-        // الساعات المنجزة = الساعات الناجحة القديمة + الساعات الجديدة الناجحة + ساعات الإعادة اللي نجح فيها دلوقتي
         let finalPassedHours = prevPassedHours + termPassedHoursOnlyNew + reHoursSuccededNow;
 
-        // تحديث الواجهة
         document.getElementById('results').style.display = 'block';
         document.getElementById('res-term-gpa').innerText = termGPA.toFixed(2);
         document.getElementById('res-cgpa').innerText = finalCGPA.toFixed(2);
@@ -219,6 +219,7 @@
 </script>
 </body>
 </html>
+
 
 
 
