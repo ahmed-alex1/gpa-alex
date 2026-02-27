@@ -15,12 +15,10 @@
         h1 { color: var(--primary); text-align: center; font-size: 1.6rem; margin: 0; }
         .subtitle { text-align: center; color: #64748b; font-size: 0.85rem; margin-bottom: 25px; }
         
-        /* Progress Bar */
         .grad-info { background: #eff6ff; padding: 15px; border-radius: 16px; margin-bottom: 20px; text-align: center; border: 1px solid #bfdbfe; }
         .progress-container { background: #e2e8f0; height: 12px; border-radius: 10px; margin: 12px 0; overflow: hidden; }
         .progress-bar { background: var(--success); height: 100%; width: 0%; transition: 1s ease-in-out; }
 
-        /* Sections */
         .section { background: #ffffff; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #e2e8f0; position: relative; }
         h3 { margin-top: 0; color: var(--primary); font-size: 1rem; border-right: 4px solid var(--accent); padding-right: 10px; }
         
@@ -28,7 +26,6 @@
         .tab-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #f8fafc; cursor: pointer; font-weight: bold; text-align: center;}
         .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* Rows */
         .course-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; background: #f9fafb; padding: 8px; border-radius: 10px; border: 1px solid transparent; transition: 0.2s; }
         .course-row:hover { border-color: #cbd5e1; }
         input, select { padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; width: 100%; font-weight: 600; outline: none; }
@@ -39,14 +36,15 @@
         .btn-calc { background: var(--primary); color: white; width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
         .btn-calc:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,51,102,0.2); }
         
-        /* Results */
         #results { margin-top: 25px; display: none; text-align: center; padding: 25px; background: var(--primary); color: white; border-radius: 20px; }
         .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
         .gpa-num { font-size: 2.2rem; font-weight: 800; color: var(--accent); display: block; }
         .gpa-rating { font-size: 1.3rem; font-weight: bold; color: white; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; }
         
+        /* التعديل الجديد على الفوتر */
         .footer { margin-top: 40px; text-align: center; border-top: 2px solid #f1f5f9; padding-top: 20px; }
-        .by-ahmed { font-family: 'Georgia', serif; font-size: 1.4rem; font-weight: bold; color: var(--primary); margin-top: 5px; }
+        .college-name { font-size: 0.85rem; color: var(--primary); font-weight: 400; margin-bottom: 4px; letter-spacing: 0.5px; }
+        .by-ahmed { font-family: 'Georgia', serif; font-size: 1.3rem; font-weight: bold; color: var(--primary); }
     </style>
 </head>
 <body>
@@ -55,7 +53,7 @@
     <div class="header-logo">
         <div class="logo-icon">⚙️</div>
         <h1>حاسبة GPA هندسة الإسكندرية</h1>
-        <p class="subtitle">لائحة الساعات المعتمدة - مطور بواسطة أحمد</p>
+        <p class="subtitle">لائحة الساعات المعتمدة </p>
     </div>
 
     <div class="grad-info">
@@ -108,7 +106,7 @@
     </div>
 
     <div class="footer">
-        <div style="font-size: 0.9rem; color: #64748b;">Mechanical Engineering - Alex Uni</div>
+        <div class="college-name">Faculty of Engineering, Alexandria University</div>
         <div class="by-ahmed">By Ahmed</div>
     </div>
 </div>
@@ -155,7 +153,6 @@
     function calculate() {
         let prevPoints = 0, prevHours = 0, prevPassedHours = 0;
         
-        // 1. حساب السجلات السابقة
         if (activeTab === 'manual') {
             prevPassedHours = parseFloat(document.getElementById('oldHours').value) || 0;
             prevHours = prevPassedHours; 
@@ -170,55 +167,41 @@
             });
         }
 
-        // 2. حساب الترم الحالي مع تطبيق سقف الإعادة
         let termPoints = 0, termHours = 0, termPassedHours = 0, reHoursToSubtract = 0;
         document.querySelectorAll('#currentList .course-row').forEach(row => {
             let h = parseFloat(row.querySelector('.h').value) || 0;
             let g = parseFloat(row.querySelector('.g').value);
             let isRe = row.querySelector('.is-re').checked;
-
-            // تطبيق قاعدة B+ (3.3) للمواد المعادة
             let effectiveGrade = (isRe && g > 3.3) ? 3.3 : g;
-
             termPoints += (h * effectiveGrade);
             termHours += h;
-            
             if (g > 0) termPassedHours += h;
-            if (isRe) reHoursToSubtract += h; // سنطرحها من المقام لأنها مسجلة مسبقاً في الساعات القديمة
+            if (isRe) reHoursToSubtract += h; 
         });
 
-        // 3. الحسابات النهائية
         let termGPA = termHours > 0 ? (termPoints / termHours) : 0;
-        
-        // الساعات التراكمية (المقام) = الساعات القديمة + ساعات الترم الحالي - الساعات المعادة (عشان متتحسبش مرتين)
         let totalGPAHours = (prevHours + termHours) - reHoursToSubtract;
         let finalCGPA = totalGPAHours > 0 ? ((prevPoints + termPoints) / totalGPAHours) : 0;
-
-        // الساعات المنجزة (الباسد) = الساعات الناجحة القديمة + الناجحة الجديدة - (ساعات الإعادة لو نجح فيها المرة دي)
-        // ملاحظة: بنطرح ساعات الإعادة فقط لو الطالب نجح فيها عشان الساعات متتكررش في الـ 144
         let finalPassedHours = (prevPassedHours + termPassedHours) - (reHoursToSubtract > 0 && termPassedHours >= reHoursToSubtract ? reHoursToSubtract : 0);
 
-        // 4. عرض النتائج
         document.getElementById('results').style.display = 'block';
-        document.getElementById('res-term-gpa').innerText = termGPA.toFixed(3);
-        document.getElementById('res-cgpa').innerText = finalCGPA.toFixed(3);
+        document.getElementById('res-term-gpa').innerText = termGPA.toFixed(2);
+        document.getElementById('res-cgpa').innerText = finalCGPA.toFixed(2);
         document.getElementById('rating-text').innerText = "التقدير العام: " + getRating(finalCGPA);
 
-        // تحديث البار
         let progressPercent = Math.min((finalPassedHours / GRAD_HOURS) * 100, 100);
         document.getElementById('p-bar').style.width = progressPercent + "%";
         document.getElementById('h-summary').innerText = `الإنجاز: ${finalPassedHours} / ${GRAD_HOURS} ساعة`;
         document.getElementById('h-left').innerText = `باقي ${Math.max(GRAD_HOURS - finalPassedHours, 0)} ساعة على التخرج`;
         
-        // Scroll to results
         document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // إضافة 5 صفوف عند الفتح
     window.onload = function() { for(let i=0; i<5; i++) addRow('currentList'); };
 </script>
 </body>
 </html>
+
 
 
 
