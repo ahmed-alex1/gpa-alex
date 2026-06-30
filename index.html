@@ -12,8 +12,8 @@
 
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5785433219923226" crossorigin="anonymous"></script>
     <meta name="google-adsense-account" content="ca-pub-5785433219923226">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>GPA Calculator | Engineering Alexandria</title>
     <style>
         :root { 
@@ -228,38 +228,38 @@
         btns[1].classList.toggle('active', t === 'detailed');
     }
 
-   function addRow(containerId) {
-    const div = document.createElement('div');
-    div.className = 'course-row';
-    div.innerHTML = `
-        <div style="width: 100%;">
-            <label style="font-size: 0.75rem; margin-bottom:5px; display:block;">Course name</label>
-            <input type="text" placeholder="اسم المادة" class="course-name" style="width:100%; font-weight:600;">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <div style="flex:1;">
-                    <label style="font-size: 0.75rem; margin-bottom:5px; display:block;">الساعات</label>
-                    <input type="number" placeholder="الساعات" class="h" style="width:100%; font-weight:600;">
+    function addRow(containerId) {
+        const div = document.createElement('div');
+        div.className = 'course-row';
+        div.innerHTML = `
+            <div style="width: 100%;">
+                <label style="font-size: 0.75rem; margin-bottom:5px; display:block;">اسم المادة</label>
+                <input type="text" placeholder="اسم المادة" class="course-name" style="width:100%; font-weight:600;">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div style="flex:1;">
+                        <label style="font-size: 0.75rem; margin-bottom:5px; display:block;">الساعات</label>
+                        <input type="number" placeholder="الساعات" class="h" style="width:100%; font-weight:600;">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size: 0.75rem; margin-bottom:5px; display:block;">التقدير</label>
+                        <select class="g" style="width:100%; font-weight:600;">
+                            ${Object.keys(GRADES).map(g => `<option value="${GRADES[g]}">${g}</option>`).join('')}
+                        </select>
+                    </div>
                 </div>
-                <div style="flex:1;">
-                    <label style="font-size: 0.75rem; margin-bottom:5px; display:block;">التقدير</label>
-                    <select class="g" style="width:100%; font-weight:600;">
-                        ${Object.keys(GRADES).map(g => `<option value="${GRADES[g]}">${g}</option>`).join('')}
-                    </select>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <label style="font-size:0.75rem; display:flex; align-items:center;">
+                        <input type="checkbox" class="is-re" style="margin-left:5px;"> إعادة (F)
+                    </label>
+                    <button onclick="this.closest('.course-row').remove()" style="border:none; background:none; color:red; cursor:pointer; font-weight:bold; margin-left:auto;">✕</button>
                 </div>
             </div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <label style="font-size:0.75rem; display:flex; align-items:center;">
-                    <input type="checkbox" class="is-re" style="margin-left:5px;"> إعادة (F)
-                </label>
-                <button onclick="this.parentElement.parentElement.remove()" style="border:none; background:none; color:red; cursor:pointer; font-weight:bold; margin-left:auto;">✕</button>
-            </div>
-        </div>
-    `;
-    document.getElementById(containerId).appendChild(div);
-}
-    // باقي الكود كما هو
+        `;
+        document.getElementById(containerId).appendChild(div);
+    }
+
     function getRating(gpa) {
         if (gpa >= 3.695) return "إمتياز مرتفع";
         if (gpa >= 3.295) return "إمتياز";
@@ -296,9 +296,9 @@
             let effectiveGrade = (isRe && g > 3.3) ? 3.3 : g;
             
             // هنا يكون التقدير والساعات والإعادة في سطر واحد
-            let label = row.querySelector('.g').options[row.querySelector('.g').selectedIndex].text;
-            // يمكن استخدام النص مباشرة أو تعديل حسب الحاجة
-            
+            // يتم حساب النقاط بناءً على التقدير الفعلي مع أخذ الإعادة في الاعتبار
+            let gText = row.querySelector('.g').options[row.querySelector('.g').selectedIndex].text;
+
             // حساب النقاط
             termPoints += (h * effectiveGrade);
             termHours += h;
